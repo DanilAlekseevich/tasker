@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"tasker/internal/config"
 
 	"tasker/internal/controllers"
 	"tasker/internal/repositories"
@@ -12,15 +13,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "yourpassword"
-	dbname   = "yourdb"
-)
-
 func main() {
+	_, err := config.LoadConfig("./../../config.yaml")
+	if err != nil {
+		log.Fatalf("Ошибка загрузки конфигурации: %v", err)
+	}
+
 	app := fiber.New()
 
 	psqlInfo := fmt.Sprintf(
@@ -29,9 +27,9 @@ func main() {
 	)
 
 	db, err := sql.Open("postgres", psqlInfo)
-		if err != nil {
-			log.Fatal(err)
-		}
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer db.Close()
 
 	if err = db.Ping(); err != nil {

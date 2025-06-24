@@ -1,0 +1,13 @@
+services:
+  pg_db:
+    image: postgres:17.0-alpine3.20
+    environment:
+      POSTGRES_DB: "tracker"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "123456"
+    volumes:
+      - ./docker/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - pg_network
