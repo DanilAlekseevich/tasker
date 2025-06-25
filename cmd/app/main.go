@@ -1,44 +1,28 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
-	"tasker/internal/config"
-
-	"tasker/internal/controllers"
-	"tasker/internal/repositories"
-	"tasker/internal/routes"
-
-	"github.com/gofiber/fiber/v2"
+	"context"
+	"log/slog"
+	"os"
+	"tasker/internal/launcher"
 )
 
 func main() {
-	_, err := config.LoadConfig("./../../config.yaml")
-	if err != nil {
-		log.Fatalf("Ошибка загрузки конфигурации: %v", err)
+	configPath := os.Getenv("CONFIG_PATH")
+	if configPath == "" {
+		configPath = "./config.yaml"
 	}
 
-	app := fiber.New()
+	launcher := launcher.New()
 
-	psqlInfo := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname,
-	)
-
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	if err = db.Ping(); err != nil {
-		log.Fatal(err)
+	if err := launcher.Initialize(configPath); err != nil {
+		slog.Error("failed to initialize application", "error", err)
+		os.Exit(1)
 	}
 
-	repositories := repositories.NewRepositories(db)
-	controllers := controllers.NewControllers(repositories)
-	routes.Setup(app, controllers)
-
-	app.Listen(":3000")
+	ctx := context.Background()
+	if err := launcher.Run(ctx); err != nil {
+		slog.Error("application run error", "error", err)
+		os.Exit(1)
+	}
 }
