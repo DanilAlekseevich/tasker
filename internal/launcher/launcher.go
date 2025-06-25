@@ -56,7 +56,7 @@ func (l *Launcher) Run(ctx context.Context) error {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		addr := fmt.Sprintf(":%d", "8080")
+		addr := fmt.Sprintf(":%d", 8080)
 		l.container.Logger.Info("starting server", "address", addr)
 		if err := l.server.Listen(addr); err != nil {
 			l.container.Logger.Error("server error", "error", err)

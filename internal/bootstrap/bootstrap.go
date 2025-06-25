@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"log/slog"
 	"os"
 	"tasker/internal/config"
@@ -40,7 +41,7 @@ func (b *Bootstrap) InitDB() error {
 		b.Config.DB.Host, b.Config.DB.Port, b.Config.DB.User, b.Config.DB.Password, b.Config.DB.DBName,
 	)
 
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sql.Open("pgx", psqlInfo)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
