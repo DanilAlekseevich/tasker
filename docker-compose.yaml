@@ -9,3 +9,12 @@ services:
       - ./docker/postgresql/data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    environment:
+      - DATABASE_URL=postgres://admin:123456@db:5432/tasker?sslmode=disable
+    depends_on:
+      - pg_db

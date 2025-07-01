@@ -1,0 +1,9 @@
+FROM golang:1.24.4-bullseye
+
+RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.16.2/migrate.linux-amd64.tar.gz | tar xvz \
+    && mv migrate /usr/local/bin/migrate
+
+WORKDIR /app
+COPY ./migrations ./app/migrations
+
+CMD ["migrate", "-path", "/migrations", "-database", "${DATABASE_URL}", "-connection-timeout", "60", "up"]
